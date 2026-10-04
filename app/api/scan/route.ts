@@ -114,7 +114,9 @@ export async function POST(request: Request) {
       findings,
     };
 
-    await writeHistory(scanResult);
+    if (process.env.VERCEL !== "1") {
+      await writeHistory(scanResult);
+    }
 
     return NextResponse.json(scanResult);
   } catch (error) {
