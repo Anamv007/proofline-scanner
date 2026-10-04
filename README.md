@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Proofline
 
-## Getting Started
+Proofline is a security review tool for AI-assisted applications. Upload a project ZIP, run deterministic static checks against the extracted source, and inspect evidence-backed findings with remediation guidance.
 
-First, run the development server:
+**Live demo:** [scanner-v1.vercel.app](https://scanner-v1.vercel.app)
+
+> Proofline is an early beta and a static pattern scanner. It does not execute uploaded code, and a clean report is not a security guarantee.
+
+## What it does
+
+- Accepts project ZIP archives up to 10 MB.
+- Reads supported source and configuration files as text without executing them.
+- Reports findings with severity, confidence, file, line, evidence, impact, and remediation.
+- Calculates a bounded risk score and highlights the highest-priority findings.
+- Keeps the demonstration report at `/sample` separate from uploaded-project results.
+
+## Detection coverage
+
+- Hardcoded secret-like values and public secret environment variables
+- Dynamic code execution and command execution
+- Unsafe DOM sinks
+- SQL injection, path traversal, and SSRF patterns
+- Wildcard CORS and cookie security flags
+- Verbose debug and source-map configuration
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000), create a ZIP containing the project files you want to review, and upload it. Supported file types include JavaScript, TypeScript, Python, JSON, YAML, Markdown, and environment files. Dependency directories and build output are skipped.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verify changes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+npm run lint
+npm run build
+```
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```text
+app/              Next.js pages and the scan API route
+lib/              Scanner rules and shared TypeScript types
+tests/             Node test suite for scanner behavior
+public/            Static assets
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app is configured for Next.js and deploys directly to Vercel:
 
-## Deploy on Vercel
+```bash
+npx vercel --prod
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For automatic deployments, import the repository into Vercel and enable deployments from the main branch.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Data and privacy
+
+Uploaded archives are processed by the scan API and are not executed. The beta writes the ten most recent scan results to `data/scan-history.json` locally. That generated file is ignored by Git and should not be committed. Production deployments need a persistent database or storage service if scan history must survive serverless instances.
+
+## License
+
+No license has been selected yet. Add one before accepting external contributions or allowing reuse of the code.
